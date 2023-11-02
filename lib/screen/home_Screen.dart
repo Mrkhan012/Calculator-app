@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 class Calculator extends StatelessWidget {
   final calculatorController = Get.put(CalculatorController());
 
-  Calculator({super.key});
+  Calculator({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,109 +29,22 @@ class Calculator extends StatelessWidget {
                   child: Obx(() => Text(
                         calculatorController.displayText.value,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.pinkAccent,
                           fontSize: 50,
                         ),
                       )),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  calcButton('AC', Colors.grey, Colors.black, () {
-                    calculatorController.calculation('AC');
-                  }),
-                  calcButton('+/-', Colors.grey, Colors.black, () {
-                    calculatorController.calculation('+/-');
-                  }),
-                  calcButton('%', Colors.grey, Colors.black, () {
-                    calculatorController.calculation('%');
-                  }),
-                  calcButton('/', Colors.amber[900]!, Colors.white, () {
-                    calculatorController.calculation('/');
-                  }),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  calcButton('7', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('7');
-                  }),
-                  calcButton('8', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('8');
-                  }),
-                  calcButton('9', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('9');
-                  }),
-                  calcButton('x', Colors.amber[900]!, Colors.white, () {
-                    calculatorController.calculation('x');
-                  }),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  calcButton('4', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('4');
-                  }),
-                  calcButton('5', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('5');
-                  }),
-                  calcButton('6', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('6');
-                  }),
-                  calcButton('-', Colors.amber[900]!, Colors.white, () {
-                    calculatorController.calculation('-');
-                  }),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  calcButton('1', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('1');
-                  }),
-                  calcButton('2', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('2');
-                  }),
-                  calcButton('3', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('3');
-                  }),
-                  calcButton('+', Colors.amber[900]!, Colors.white, () {
-                    calculatorController.calculation('+');
-                  }),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  calcButton('0', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('0');
-                  }),
-                  calcButton('.', Colors.grey[850]!, Colors.white, () {
-                    calculatorController.calculation('.');
-                  }),
-                  calcButton('=', Colors.amber[900]!, Colors.white, () {
-                    calculatorController.calculation('=');
-                  }),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+              buildButtonRow(['C', '+', '%', '/']),
+              const SizedBox(height: 10),
+              buildButtonRow(['7', '8', '9', 'x']),
+              const SizedBox(height: 10),
+              buildButtonRow(['4', '5', '6', '-']),
+              const SizedBox(height: 10),
+              buildButtonRow(['1', '2', '3', '+']),
+              const SizedBox(height: 10),
+              buildButtonRow(['0', '.', '=']),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -137,24 +52,44 @@ class Calculator extends StatelessWidget {
     );
   }
 
+  Widget buildButtonRow(List<String> buttons) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: buttons
+          .map((buttonText) => calcButton(
+                buttonText,
+                buttonText == '=' || buttonText == "C"
+                    ? Colors.pink[900]!
+                    : Colors.grey[850]!,
+                Colors.white,
+                () {
+                  calculatorController.calculation(buttonText);
+                },
+              ))
+          .toList(),
+    );
+  }
+
   Widget calcButton(String buttonText, Color buttonColor, Color textColor,
       VoidCallback onPressed) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(buttonColor),
-          padding: MaterialStateProperty.all(const EdgeInsets.all(20)),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          )),
-        ),
-        child: Text(
-          buttonText,
-          style: TextStyle(
-            fontSize: 30,
-            color: textColor,
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(buttonColor),
+            padding: MaterialStateProperty.all(const EdgeInsets.all(20)),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            )),
+          ),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              fontSize: 30,
+              color: textColor,
+            ),
           ),
         ),
       ),
@@ -172,7 +107,7 @@ class CalculatorController extends GetxController {
   String previousOperator = '';
 
   void calculation(String buttonText) {
-    if (buttonText == 'AC') {
+    if (buttonText == 'C') {
       displayText.value = '0';
       numOne = 0;
       numTwo = 0;
